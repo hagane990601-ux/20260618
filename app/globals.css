@@ -1,0 +1,97 @@
+:root {
+  color: #25221d;
+  background: #ffffff;
+  font-family:
+    "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo",
+    system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgba(245, 181, 106, 0.18), transparent 28rem),
+    linear-gradient(180deg, #fffdf9 0%, #ffffff 48%);
+}
+
+.page-shell {
+  width: min(100%, 760px);
+  margin: 0 auto;
+  padding: 48px 18px;
+}
+
+.hero {
+  padding: 22px 0 18px;
+}
+
+.eyebrow {
+  margin: 0 0 10px;
+  color: #9a6330;
+  font-size: 0.86rem;
+  font-weight: 800;
+}
+
+h1,
+h2,
+p {
+  margin-top: 0;
+}
+
+h1 {
+  max-width: 12em;
+  margin-bottom: 14px;
+  font-size: clamp(2.2rem, 10vw, 4rem);
+  line-height: 1.05;
+  letter-spacing: 0;
+}
+
+.lead {
+  max-width: 42rem;
+  margin-bottom: 0;
+  color: #665d54;
+  font-size: 1.04rem;
+  line-height: 1.8;
+}
+
+.card {
+  margin-top: 18px;
+  border: 1px solid #efe2d0;
+  border-radius: 8px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 14px 34px rgba(97, 70, 38, 0.08);
+}
+
+.card h2 {
+  margin-bottom: 14px;
+  font-size: 1.2rem;
+}
+
+.card ul {
+  display: grid;
+  gap: 10px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.card li {
+  border-radius: 8px;
+  padding: 13px 14px;
+  background: #fff7ec;
+  font-weight: 700;
+}
+
+@media (min-width: 640px) {
+  .page-shell {
+    padding-top: 72px;
+  }
+
+  .card ul {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
