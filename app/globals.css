@@ -1,5 +1,5 @@
 :root {
-  color: #25221d;
+  color: #2f2a23;
   background: #ffffff;
   font-family:
     "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo",
@@ -14,64 +14,152 @@ body {
   margin: 0;
   min-height: 100vh;
   background:
-    radial-gradient(circle at top left, rgba(245, 181, 106, 0.18), transparent 28rem),
-    linear-gradient(180deg, #fffdf9 0%, #ffffff 48%);
+    radial-gradient(circle at top left, rgba(245, 181, 106, 0.2), transparent 32rem),
+    linear-gradient(180deg, #fffdf9 0%, #ffffff 44%);
 }
 
 .page-shell {
-  width: min(100%, 760px);
+  width: min(100%, 920px);
   margin: 0 auto;
-  padding: 48px 18px;
+  padding: 30px 16px 44px;
 }
 
 .hero {
-  padding: 22px 0 18px;
+  padding: 12px 2px 18px;
 }
 
 .eyebrow {
-  margin: 0 0 10px;
-  color: #9a6330;
-  font-size: 0.86rem;
+  margin: 0 0 8px;
+  color: #9b642d;
+  font-size: 0.82rem;
   font-weight: 800;
 }
 
 h1,
 h2,
+h3,
 p {
   margin-top: 0;
 }
 
 h1 {
-  max-width: 12em;
-  margin-bottom: 14px;
-  font-size: clamp(2.2rem, 10vw, 4rem);
-  line-height: 1.05;
+  max-width: 9em;
+  margin-bottom: 12px;
+  font-size: clamp(2.2rem, 10vw, 4.2rem);
+  line-height: 1.06;
+  letter-spacing: 0;
+}
+
+h2 {
+  margin-bottom: 16px;
+  font-size: 1.28rem;
+  line-height: 1.35;
+  letter-spacing: 0;
+}
+
+h3 {
+  margin-bottom: 8px;
+  font-size: 1rem;
   letter-spacing: 0;
 }
 
 .lead {
   max-width: 42rem;
-  margin-bottom: 0;
-  color: #665d54;
-  font-size: 1.04rem;
+  margin-bottom: 18px;
+  color: #6d6257;
+  font-size: 1rem;
   line-height: 1.8;
 }
 
-.card {
-  margin-top: 18px;
-  border: 1px solid #efe2d0;
+.benefit-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.benefit-row span,
+.time-badge {
+  border-radius: 999px;
+  padding: 8px 12px;
+  color: #7a4b13;
+  background: #fff0d8;
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.today-card,
+.panel,
+.weekly-section {
+  border: 1px solid #efdfcb;
   border-radius: 8px;
-  padding: 20px;
-  background: rgba(255, 255, 255, 0.94);
-  box-shadow: 0 14px 34px rgba(97, 70, 38, 0.08);
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 12px 30px rgba(98, 72, 42, 0.08);
 }
 
-.card h2 {
-  margin-bottom: 14px;
-  font-size: 1.2rem;
+.today-card {
+  margin-top: 12px;
+  padding: 18px;
 }
 
-.card ul {
+.card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.dish-grid,
+.summary-grid,
+.content-grid,
+.weekly-list {
+  display: grid;
+  gap: 10px;
+}
+
+.dish-grid article,
+.summary-grid div {
+  min-height: 76px;
+  border-radius: 8px;
+  padding: 13px;
+  background: #fff8ee;
+}
+
+.dish-grid span,
+.summary-grid span {
+  display: block;
+  margin-bottom: 6px;
+  color: #7b7064;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.dish-grid strong,
+.summary-grid strong {
+  display: block;
+  line-height: 1.45;
+}
+
+.summary-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 10px;
+}
+
+.summary-grid div {
+  min-height: 68px;
+  background: #f3fae9;
+}
+
+.content-grid {
+  margin-top: 14px;
+}
+
+.panel,
+.weekly-section {
+  padding: 18px;
+}
+
+.tag-list,
+.check-list {
   display: grid;
   gap: 10px;
   padding: 0;
@@ -79,19 +167,90 @@ h1 {
   list-style: none;
 }
 
-.card li {
-  border-radius: 8px;
-  padding: 13px 14px;
-  background: #fff7ec;
-  font-weight: 700;
+.tag-list {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
-@media (min-width: 640px) {
+.tag-list li,
+.check-list li {
+  border-radius: 8px;
+  padding: 12px;
+  background: #fff8ee;
+  font-weight: 800;
+}
+
+.check-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.check-list span {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+  border: 2px solid #d8bc94;
+  border-radius: 5px;
+  background: #ffffff;
+}
+
+.weekly-section {
+  margin-top: 14px;
+}
+
+.section-title h2 {
+  margin-bottom: 0;
+}
+
+.weekly-list {
+  margin-top: 16px;
+}
+
+.weekly-card {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 12px;
+  align-items: start;
+  border-radius: 8px;
+  padding: 13px;
+  background: #fbf6ee;
+}
+
+.weekly-card p {
+  margin-bottom: 5px;
+  color: #6d6257;
+  line-height: 1.5;
+}
+
+.weekly-card p:last-child {
+  margin-bottom: 0;
+}
+
+.day {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  color: #ffffff;
+  background: #c76d2d;
+  font-weight: 900;
+}
+
+@media (min-width: 700px) {
   .page-shell {
-    padding-top: 72px;
+    padding-top: 54px;
   }
 
-  .card ul {
+  .dish-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .content-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .weekly-list {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
