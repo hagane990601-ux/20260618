@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-label="今日の献立 自動提案">
+  <rect width="1200" height="630" fill="#fffdf8"/>
+  <rect x="72" y="72" width="1056" height="486" rx="40" fill="#ffffff" stroke="#ece2d6" stroke-width="4"/>
+  <circle cx="950" cy="315" r="136" fill="#fff2e9"/>
+  <circle cx="950" cy="315" r="88" fill="#ffffff" stroke="#e76f51" stroke-width="14"/>
+  <path d="M890 310c38-34 112-34 150 0" fill="none" stroke="#3d7a57" stroke-width="18" stroke-linecap="round"/>
+  <path d="M914 360h72" stroke="#e76f51" stroke-width="22" stroke-linecap="round"/>
+  <text x="116" y="174" fill="#3d7a57" font-family="Arial, sans-serif" font-size="34" font-weight="700">冷蔵庫の食材から自動提案</text>
+  <text x="116" y="286" fill="#2d2925" font-family="Arial, sans-serif" font-size="74" font-weight="800">今日の献立を</text>
+  <text x="116" y="376" fill="#2d2925" font-family="Arial, sans-serif" font-size="74" font-weight="800">すぐ決める</text>
+  <text x="116" y="462" fill="#756f67" font-family="Arial, sans-serif" font-size="32" font-weight="600">買い物リスト・1週間献立・履歴保存つき</text>
+</svg>
