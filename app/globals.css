@@ -175,6 +175,60 @@ h3 {
   margin-bottom: 18px;
 }
 
+.habit-grid {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.habit-card {
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 16px;
+  background: var(--card);
+  box-shadow: var(--shadow);
+}
+
+.habit-card strong {
+  display: block;
+  margin-bottom: 7px;
+  color: var(--green);
+  font-size: 32px;
+  line-height: 1;
+}
+
+.habit-card span {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.progress-track {
+  overflow: hidden;
+  height: 12px;
+  margin-top: 10px;
+  border-radius: 999px;
+  background: #efe3d8;
+}
+
+.progress-track span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--green);
+}
+
+.reminder-controls {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  margin: 8px 0 10px;
+}
+
+.reminder-controls input {
+  min-height: 50px;
+}
+
 .card-header,
 .section-title {
   display: flex;
@@ -361,16 +415,38 @@ h3 {
   background: #fffaf5;
 }
 
-.weekly-card {
-  display: grid;
-  grid-template-columns: 44px 1fr;
-  gap: 12px;
-  text-align: left;
-}
-
 .weekly-card.is-selected {
   border-color: var(--accent);
   background: #fff1e7;
+}
+
+.weekly-card > button {
+  width: 100%;
+  border: 0;
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  gap: 12px;
+  align-items: start;
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+}
+
+.weekly-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  color: var(--green);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.weekly-check input {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--green);
 }
 
 .day {
@@ -443,6 +519,10 @@ h3 {
     padding: 34px;
   }
 
+  .habit-grid {
+    grid-template-columns: 0.75fr 0.75fr 1.2fr;
+  }
+
   .content-grid {
     grid-template-columns: 0.9fr 1.1fr;
   }
@@ -462,7 +542,8 @@ h3 {
   .today-card,
   .panel,
   .weekly-section,
-  .fridge-card {
+  .fridge-card,
+  .habit-card {
     border-radius: 16px;
   }
 
@@ -472,7 +553,8 @@ h3 {
 
   .dish-grid,
   .summary-grid,
-  .ingredient-form {
+  .ingredient-form,
+  .reminder-controls {
     grid-template-columns: 1fr;
   }
 
