@@ -88,6 +88,11 @@ function scheduleReminder(reminderTime: string, selectedMenuTitle: string, onCom
   }, delay);
 }
 
+function menuShareUrl(menuId: string) {
+  if (typeof window === "undefined") return `/menu/${menuId}`;
+  return `${window.location.origin}/menu/${menuId}`;
+}
+
 export default function Home() {
   const [fridgeIngredients, setFridgeIngredients] = useState<string[]>([]);
   const [ingredientInput, setIngredientInput] = useState("");
@@ -234,6 +239,26 @@ export default function Home() {
     setWeeklyStatus((current) => ({ ...current, [menuId]: !current[menuId] }));
   };
 
+  const shareMenu = async (recipe: MenuRecipe, channel: "x" | "line") => {
+    const url = menuShareUrl(recipe.id);
+    const text =
+      channel === "x"
+        ? `${recipe.title}を今日の献立にどうですか？`
+        : `${recipe.title}をLINEで送ります`;
+
+    if (navigator.share) {
+      await navigator.share({
+        title: recipe.title,
+        text,
+        url,
+      });
+      return;
+    }
+
+    await navigator.clipboard.writeText(url);
+    setSaveMessage("献立ページのURLをコピーしました");
+  };
+
   return (
     <main className="page-shell">
       <section className="hero">
@@ -371,7 +396,16 @@ export default function Home() {
           <button className="secondary-button" type="button" onClick={() => addToHistory(selectedMenu)}>
             作った献立に追加
           </button>
+          <button className="secondary-button" type="button" onClick={() => shareMenu(selectedMenu, "x")}>
+            Xでシェア
+          </button>
+          <button className="secondary-button" type="button" onClick={() => shareMenu(selectedMenu, "line")}>
+            LINEで送る
+          </button>
         </div>
+        <Link className="text-link" href={`/menu/${selectedMenu.id}`}>
+          この献立ページを見る
+        </Link>
         {saveMessage ? <p className="save-message">{saveMessage}</p> : null}
       </section>
 
@@ -422,6 +456,15 @@ export default function Home() {
                     <small>一致: {matchedIngredients(menu, fridgeIngredients).join("、") || "なし"}</small>
                   </span>
                 </button>
+                <div className="share-row" aria-label={`${menu.title}をシェア`}>
+                  <Link href={`/menu/${menu.id}`}>詳細</Link>
+                  <button type="button" onClick={() => shareMenu(menu, "x")}>
+                    Xでシェア
+                  </button>
+                  <button type="button" onClick={() => shareMenu(menu, "line")}>
+                    LINEで送る
+                  </button>
+                </div>
               </article>
             );
           })}
