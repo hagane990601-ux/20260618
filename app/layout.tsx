@@ -1,14 +1,26 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "今日の献立配信MVP | 夕飯決めを毎日3分で",
-  description: "主菜・副菜・汁物、食材、買い物リスト、1週間分の献立をまとめて確認できる献立配信MVPです。",
+  title: "今日の献立配信MVP | 冷蔵庫から夕飯を提案",
+  description: "冷蔵庫の食材から献立を提案し、買い物リスト、履歴、リマインダーまでまとめて使える献立配信MVPです。",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    title: "今日の献立",
+    statusBarStyle: "default",
+  },
   openGraph: {
     title: "今日の献立配信MVP",
-    description: "夕飯決めを毎日3分で。献立と買い物リストをまとめて確認できます。",
+    description: "冷蔵庫の食材から、今日の献立と買い物リストをすぐ確認できます。",
     type: "website",
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#fff8ee",
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({
