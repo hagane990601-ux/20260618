@@ -70,6 +70,7 @@ const weeklyMenus = [
 ];
 
 const benefits = ["時短", "節約", "健康", "野菜多め"];
+const trustPoints = ["買い物前に確認できる", "家族向けに使いやすい", "1週間の段取りが見える"];
 
 export default function Home() {
   const [selectedDay, setSelectedDay] = useState("水");
@@ -78,15 +79,25 @@ export default function Home() {
   return (
     <main className="page-shell">
       <section className="hero">
-        <p className="eyebrow">今日の献立配信MVP</p>
-        <h1>今日のごはん、もう迷わない。</h1>
-        <p className="lead">
-          主菜・副菜・汁物から買い物リストまで、毎日の食卓にちょうどいい献立をまとめて提案します。
-        </p>
-        <div className="benefit-row" aria-label="献立の目的">
-          {benefits.map((benefit) => (
-            <span key={benefit}>{benefit}</span>
-          ))}
+        <div className="hero-copy">
+          <p className="eyebrow">今日の献立配信MVP</p>
+          <h1>夕飯決めを、毎日3分で。</h1>
+          <p className="lead">
+            主菜・副菜・汁物、食材、買い物リストまでまとめて表示。忙しい日の「今日なに作る？」を軽くします。
+          </p>
+          <div className="benefit-row" aria-label="献立の目的">
+            {benefits.map((benefit) => (
+              <span key={benefit}>{benefit}</span>
+            ))}
+          </div>
+        </div>
+        <div className="hero-panel" aria-label="サービスの特徴">
+          <strong>こんな人におすすめ</strong>
+          <ul>
+            {trustPoints.map((point) => (
+              <li key={point}>{point}</li>
+            ))}
+          </ul>
         </div>
       </section>
 
