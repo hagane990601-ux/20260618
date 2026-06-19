@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" role="img" aria-label="今日の献立">
+  <rect width="192" height="192" rx="44" fill="#fff8ee"/>
+  <circle cx="96" cy="96" r="58" fill="#ffffff" stroke="#d98942" stroke-width="8"/>
+  <path d="M58 94c18-15 58-15 76 0" fill="none" stroke="#4e5f34" stroke-width="10" stroke-linecap="round"/>
+  <path d="M70 116h52" stroke="#c76d2d" stroke-width="12" stroke-linecap="round"/>
+  <circle cx="72" cy="76" r="10" fill="#f1b15f"/>
+  <circle cx="120" cy="76" r="10" fill="#84a96a"/>
+</svg>
