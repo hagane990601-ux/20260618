@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -52,6 +53,13 @@ export default function RootLayout({
   return (
     <html lang="ja">
       <body>
+        <Script src="https://www.googletagmanager.com/gtag/js?id=G-WQXR6NSDJ3" strategy="afterInteractive" />
+        <Script id="google-analytics" strategy="afterInteractive">{`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag("js", new Date());
+          gtag("config", "G-WQXR6NSDJ3");
+        `}</Script>
         <style>{`
           .share-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
           .share-row a, .share-row button { border: 1px solid #ece2d6; border-radius: 999px; padding: 9px 12px; background: #fff; color: #c95438; font-size: 13px; font-weight: 800; text-decoration: none; cursor: pointer; }
