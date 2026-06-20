@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { ChangeEvent, FormEvent, useEffect, useMemo, useState } from "react";
 import menuRecipes from "./data/menuRecipes.json";
+import { getCurrentWeeklyMenu, getTodayDailyMenu, weeklyMenus, type WeeklyMenu } from "./data/weeklyMenus";
 
 type MenuRecipe = (typeof menuRecipes)[number];
 type MenuWithMatch = MenuRecipe & { matchCount: number };
@@ -97,6 +98,7 @@ export default function Home() {
   const [fridgeIngredients, setFridgeIngredients] = useState<string[]>([]);
   const [ingredientInput, setIngredientInput] = useState("");
   const [selectedMenuId, setSelectedMenuId] = useState(menuRecipes[0].id);
+  const [currentWeek, setCurrentWeek] = useState<WeeklyMenu>(weeklyMenus[0]);
   const [favorites, setFavorites] = useState<StoredMenu[]>([]);
   const [saveMessage, setSaveMessage] = useState("");
   const [streak, setStreak] = useState<StreakState>({ count: 1, lastVisitDate: "" });
@@ -105,6 +107,7 @@ export default function Home() {
   const [notificationStatus, setNotificationStatus] = useState("未設定");
 
   useEffect(() => {
+    setCurrentWeek(getCurrentWeeklyMenu());
     setFridgeIngredients(readStorage<string[]>(STORAGE_KEYS.fridge, ["生鮭", "小松菜", "豆腐"]));
     setFavorites(readStorage<StoredMenu[]>(STORAGE_KEYS.favorites, []));
     setWeeklyStatus(readStorage<WeeklyStatus>(STORAGE_KEYS.weeklyStatus, {}));
@@ -145,25 +148,33 @@ export default function Home() {
   }, [reminder]);
 
   const suggestedMenus = useMemo<MenuWithMatch[]>(() => {
-    return [...menuRecipes]
-      .map((recipe) => ({
-        ...recipe,
-        matchCount: matchedIngredients(recipe, fridgeIngredients).length,
-      }))
-      .sort((a, b) => b.matchCount - a.matchCount || a.ingredients.length - b.ingredients.length);
-  }, [fridgeIngredients]);
+    return currentWeek.dailyMenus.flatMap(({ recipeId }) => {
+      const recipe = menuRecipes.find((candidate) => candidate.id === recipeId);
+      return recipe
+        ? [
+            {
+              ...recipe,
+              matchCount: matchedIngredients(recipe, fridgeIngredients).length,
+            },
+          ]
+        : [];
+    });
+  }, [currentWeek, fridgeIngredients]);
+
+  const todayMenuId = getTodayDailyMenu(currentWeek).recipeId;
 
   useEffect(() => {
-    if (suggestedMenus.length > 0) {
-      setSelectedMenuId(suggestedMenus[0].id);
-    }
-  }, [suggestedMenus]);
+    setSelectedMenuId(todayMenuId);
+  }, [todayMenuId]);
 
-  const selectedMenu = suggestedMenus.find((menu) => menu.id === selectedMenuId) ?? suggestedMenus[0];
+  const selectedMenu =
+    suggestedMenus.find((menu) => menu.id === selectedMenuId) ??
+    suggestedMenus.find((menu) => menu.id === todayMenuId) ??
+    suggestedMenus[0];
   const selectedMatchedIngredients = matchedIngredients(selectedMenu, fridgeIngredients);
   const selectedMissingIngredients = missingIngredients(selectedMenu, fridgeIngredients);
   const favoriteIds = new Set(favorites.map((menu) => menu.id));
-  const completedCount = suggestedMenus.filter((menu) => weeklyStatus[menu.id]).length;
+  const completedCount = suggestedMenus.filter((menu) => weeklyStatus[`${currentWeek.id}:${menu.id}`]).length;
   const weeklyProgress = Math.round((completedCount / suggestedMenus.length) * 100);
 
   useEffect(() => {
@@ -211,7 +222,7 @@ export default function Home() {
     const history = readStorage<StoredMenu[]>(STORAGE_KEYS.history, []);
     const nextHistory = [{ ...recipe, savedAt: new Date().toISOString() }, ...history].slice(0, 20);
     window.localStorage.setItem(STORAGE_KEYS.history, JSON.stringify(nextHistory));
-    setWeeklyStatus((current) => ({ ...current, [recipe.id]: true }));
+    setWeeklyStatus((current) => ({ ...current, [`${currentWeek.id}:${recipe.id}`]: true }));
     setSaveMessage("献立履歴に追加しました");
   };
 
@@ -236,7 +247,8 @@ export default function Home() {
   };
 
   const toggleWeeklyStatus = (menuId: string) => {
-    setWeeklyStatus((current) => ({ ...current, [menuId]: !current[menuId] }));
+    const statusKey = `${currentWeek.id}:${menuId}`;
+    setWeeklyStatus((current) => ({ ...current, [statusKey]: !current[statusKey] }));
   };
 
   const shareMenu = async (recipe: MenuRecipe, channel: "x" | "line") => {
@@ -353,7 +365,7 @@ export default function Home() {
       <section className="today-card" aria-labelledby="today-menu">
         <div className="card-header">
           <div>
-            <p className="eyebrow">おすすめ献立</p>
+            <p className="eyebrow">今日のおすすめ献立</p>
             <h2 id="today-menu">{selectedMenu.title}</h2>
           </div>
           <span className="time-badge">{selectedMenu.time}</span>
@@ -435,12 +447,12 @@ export default function Home() {
 
       <section className="weekly-section" aria-labelledby="weekly">
         <div className="section-title">
-          <p className="eyebrow">実行済みをチェック</p>
+          <p className="eyebrow">今週: {currentWeek.title}</p>
           <h2 id="weekly">週間献立</h2>
         </div>
         <div className="weekly-list">
           {suggestedMenus.map((menu, index) => {
-            const isDone = Boolean(weeklyStatus[menu.id]);
+            const isDone = Boolean(weeklyStatus[`${currentWeek.id}:${menu.id}`]);
 
             return (
               <article key={menu.id} className={`weekly-card ${menu.id === selectedMenu.id ? "is-selected" : ""}`}>
@@ -449,7 +461,7 @@ export default function Home() {
                   <span>{isDone ? "実行済み" : "未実行"}</span>
                 </label>
                 <button type="button" onClick={() => setSelectedMenuId(menu.id)} aria-pressed={menu.id === selectedMenu.id}>
-                  <span className="day">{index + 1}</span>
+                  <span className="day">{currentWeek.dailyMenus[index]?.dayLabel}</span>
                   <span>
                     <strong>{menu.title}</strong>
                     <small>{menu.dishes.main}</small>
