@@ -3,31 +3,37 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://20260618-gules.vercel.app"),
-  title: "今日の献立 自動提案 | 冷蔵庫の食材から夕飯を決める",
-  description: "冷蔵庫にある食材を入れるだけで、今日の献立、買い物リスト、1週間分の夕飯候補を自動提案します。",
+  title: "今日のごはん、もう迷わない | 今日の献立配信",
+  description:
+    "主菜・副菜・汁物から買い物リストまで。冷蔵庫の食材に合わせて、今日の献立をまとめて提案します。",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
-    title: "今日の献立",
+    title: "今日の献立配信",
     statusBarStyle: "default",
   },
   openGraph: {
-    title: "今日の献立 自動提案 | 冷蔵庫の食材から夕飯を決める",
-    description: "冷蔵庫にある食材から、今日の献立と買い物リストをすぐ確認できます。",
+    title: "今日のごはん、もう迷わない",
+    description:
+      "主菜・副菜・汁物から買い物リストまで、毎日の食卓にちょうどいい献立を提案します。",
+    url: "https://20260618-gules.vercel.app",
+    siteName: "今日の献立配信",
+    locale: "ja_JP",
+    type: "website",
     images: [
       {
         url: "/og-image.svg",
         width: 1200,
         height: 630,
-        alt: "今日の献立 自動提案",
+        alt: "今日のごはん、もう迷わない | 今日の献立配信",
       },
     ],
-    type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "今日の献立 自動提案 | 冷蔵庫の食材から夕飯を決める",
-    description: "冷蔵庫にある食材から、今日の献立と買い物リストをすぐ確認できます。",
+    title: "今日のごはん、もう迷わない | 今日の献立配信",
+    description:
+      "主菜・副菜・汁物から買い物リストまで、毎日の食卓にちょうどいい献立を提案します。",
     images: ["/og-image.svg"],
   },
 };
