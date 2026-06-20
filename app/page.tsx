@@ -51,23 +51,28 @@ function yesterdayKey() {
   return todayKey(date);
 }
 
+function ingredientName(ingredient: string) {
+  return ingredient.replace(/\s+\d+(?:\/\d+)?(?:切れ|枚|束|本|丁|個|玉|g)?$/, "").trim();
+}
+
+function ingredientMatchesFridge(ingredient: string, fridgeIngredients: string[]) {
+  const ingredientLabel = normalize(ingredient);
+  const ingredientBaseName = normalize(ingredientName(ingredient));
+
+  return fridgeIngredients.some((fridgeIngredient) => {
+    const fridgeLabel = normalize(fridgeIngredient);
+    return ingredientLabel.includes(fridgeLabel) || ingredientBaseName.includes(fridgeLabel);
+  });
+}
+
 function matchedIngredients(recipe: MenuRecipe, fridgeIngredients: string[]) {
-  const fridgeSet = new Set(fridgeIngredients.map(normalize));
-  return recipe.ingredients.filter((ingredient) => fridgeSet.has(normalize(ingredient)));
+  return recipe.ingredients.filter((ingredient) => ingredientMatchesFridge(ingredient, fridgeIngredients));
 }
 
 function missingIngredients(recipe: MenuRecipe, fridgeIngredients: string[]) {
-  const fridgeSet = new Set(fridgeIngredients.map(normalize));
-  return recipe.ingredients.filter((ingredient) => !fridgeSet.has(normalize(ingredient)));
-}
-
-function shoppingItemsForMissingIngredients(recipe: MenuRecipe, missingItems: string[]) {
-  return missingItems.map((ingredient) => {
-    const ingredientIndex = recipe.ingredients.findIndex(
-      (recipeIngredient) => normalize(recipeIngredient) === normalize(ingredient),
-    );
-    return recipe.shoppingList[ingredientIndex] ?? ingredient;
-  });
+  return recipe.ingredients
+    .filter((ingredient) => !ingredientMatchesFridge(ingredient, fridgeIngredients))
+    .map(ingredientName);
 }
 
 function scheduleReminder(reminderTime: string, selectedMenuTitle: string, onComplete: () => void) {
@@ -182,7 +187,9 @@ export default function Home() {
     suggestedMenus[0];
   const selectedMatchedIngredients = matchedIngredients(selectedMenu, fridgeIngredients);
   const selectedMissingIngredients = missingIngredients(selectedMenu, fridgeIngredients);
-  const selectedShoppingList = shoppingItemsForMissingIngredients(selectedMenu, selectedMissingIngredients);
+  const selectedShoppingList = selectedMenu.ingredients.filter((ingredient) =>
+    selectedMissingIngredients.some((missing) => ingredient.includes(missing)),
+  );
   const favoriteIds = new Set(favorites.map((menu) => menu.id));
   const completedCount = suggestedMenus.filter((menu) => weeklyStatus[`${currentWeek.id}:${menu.id}`]).length;
   const weeklyProgress = Math.round((completedCount / suggestedMenus.length) * 100);
