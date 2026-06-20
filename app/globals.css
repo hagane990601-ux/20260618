@@ -504,6 +504,60 @@ h3 {
   margin-bottom: 20px;
 }
 
+
+.weekly-shopping-card {
+  margin-bottom: 18px;
+  padding: 20px;
+  border: 1px solid #cfe3d3;
+  border-radius: 18px;
+  background: var(--green-soft);
+}
+
+.shopping-toggle {
+  width: 100%;
+  min-height: 52px;
+  margin-top: 16px;
+  border: 1px solid var(--accent);
+  border-radius: 14px;
+  background: #fff;
+  color: var(--accent-dark);
+  font-weight: 800;
+}
+
+.shopping-check-list {
+  display: grid;
+  gap: 10px;
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.shopping-check-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 54px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: #fff;
+  color: var(--foreground);
+  font-weight: 700;
+}
+
+.shopping-check-item input {
+  flex: 0 0 auto;
+  width: 26px;
+  height: 26px;
+  margin: 0;
+  accent-color: var(--green);
+}
+
+.shopping-check-item input:checked + span {
+  color: var(--muted);
+  text-decoration: line-through;
+}
+
 @media (min-width: 760px) {
   .page-shell {
     padding-top: 44px;
