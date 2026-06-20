@@ -10,6 +10,7 @@ type MenuWithMatch = MenuRecipe & { matchCount: number };
 type StoredMenu = MenuRecipe & { savedAt: string };
 type StreakState = { count: number; lastVisitDate: string };
 type WeeklyStatus = Record<string, boolean>;
+type ShoppingChecks = Record<string, boolean>;
 
 const STORAGE_KEYS = {
   fridge: "menu-mvp.fridgeIngredients",
@@ -18,6 +19,8 @@ const STORAGE_KEYS = {
   reminder: "menu-mvp.reminder",
   streak: "menu-mvp.streak",
   weeklyStatus: "menu-mvp.weeklyStatus",
+  todayShoppingChecks: "menu-mvp.todayShoppingChecks",
+  weeklyShoppingChecks: "menu-mvp.weeklyShoppingChecks",
 };
 
 const presetIngredients = ["生鮭", "鶏むね肉", "豚こま肉", "卵", "豆腐", "キャベツ", "にんじん", "玉ねぎ", "小松菜", "じゃがいも"];
@@ -117,6 +120,10 @@ export default function Home() {
   const [saveMessage, setSaveMessage] = useState("");
   const [streak, setStreak] = useState<StreakState>({ count: 1, lastVisitDate: "" });
   const [weeklyStatus, setWeeklyStatus] = useState<WeeklyStatus>({});
+  const [todayShoppingChecks, setTodayShoppingChecks] = useState<ShoppingChecks>({});
+  const [weeklyShoppingChecks, setWeeklyShoppingChecks] = useState<ShoppingChecks>({});
+  const [isShoppingOpen, setIsShoppingOpen] = useState(false);
+  const [isWeeklyShoppingOpen, setIsWeeklyShoppingOpen] = useState(false);
   const [reminder, setReminder] = useState(defaultReminder);
   const [notificationStatus, setNotificationStatus] = useState("未設定");
 
@@ -125,6 +132,8 @@ export default function Home() {
     setFridgeIngredients(readStorage<string[]>(STORAGE_KEYS.fridge, ["生鮭", "小松菜", "豆腐"]));
     setFavorites(readStorage<StoredMenu[]>(STORAGE_KEYS.favorites, []));
     setWeeklyStatus(readStorage<WeeklyStatus>(STORAGE_KEYS.weeklyStatus, {}));
+    setTodayShoppingChecks(readStorage<ShoppingChecks>(STORAGE_KEYS.todayShoppingChecks, {}));
+    setWeeklyShoppingChecks(readStorage<ShoppingChecks>(STORAGE_KEYS.weeklyShoppingChecks, {}));
     setReminder(readStorage(STORAGE_KEYS.reminder, defaultReminder));
     setNotificationStatus("Notification" in window ? Notification.permission : "非対応");
 
@@ -156,6 +165,14 @@ export default function Home() {
   useEffect(() => {
     window.localStorage.setItem(STORAGE_KEYS.weeklyStatus, JSON.stringify(weeklyStatus));
   }, [weeklyStatus]);
+
+  useEffect(() => {
+    window.localStorage.setItem(STORAGE_KEYS.todayShoppingChecks, JSON.stringify(todayShoppingChecks));
+  }, [todayShoppingChecks]);
+
+  useEffect(() => {
+    window.localStorage.setItem(STORAGE_KEYS.weeklyShoppingChecks, JSON.stringify(weeklyShoppingChecks));
+  }, [weeklyShoppingChecks]);
 
   useEffect(() => {
     window.localStorage.setItem(STORAGE_KEYS.reminder, JSON.stringify(reminder));
@@ -190,6 +207,24 @@ export default function Home() {
   const selectedShoppingList = selectedMenu.ingredients.filter((ingredient) =>
     selectedMissingIngredients.some((missing) => ingredient.includes(missing)),
   );
+  const weeklyShoppingList = useMemo(() => {
+    const itemsByName = new Map<string, string>();
+
+    suggestedMenus.forEach((menu) => {
+      const menuMissingIngredients = missingIngredients(menu, fridgeIngredients);
+      menu.ingredients
+        .filter((ingredient) => menuMissingIngredients.some((missing) => ingredient.includes(missing)))
+        .forEach((ingredient) => {
+          const name = ingredientName(ingredient);
+          if (!itemsByName.has(name)) {
+            itemsByName.set(name, ingredient);
+          }
+        });
+    });
+
+    return Array.from(itemsByName.values());
+  }, [fridgeIngredients, suggestedMenus]);
+
   const favoriteIds = new Set(favorites.map((menu) => menu.id));
   const completedCount = suggestedMenus.filter((menu) => weeklyStatus[`${currentWeek.id}:${menu.id}`]).length;
   const weeklyProgress = Math.round((completedCount / suggestedMenus.length) * 100);
@@ -266,6 +301,16 @@ export default function Home() {
   const toggleWeeklyStatus = (menuId: string) => {
     const statusKey = `${currentWeek.id}:${menuId}`;
     setWeeklyStatus((current) => ({ ...current, [statusKey]: !current[statusKey] }));
+  };
+
+  const toggleTodayShoppingItem = (item: string) => {
+    const itemKey = `${selectedMenu.id}:${ingredientName(item)}`;
+    setTodayShoppingChecks((current) => ({ ...current, [itemKey]: !current[itemKey] }));
+  };
+
+  const toggleWeeklyShoppingItem = (item: string) => {
+    const itemKey = `${currentWeek.id}:${ingredientName(item)}`;
+    setWeeklyShoppingChecks((current) => ({ ...current, [itemKey]: !current[itemKey] }));
   };
 
   const shareMenu = async (recipe: MenuRecipe, channel: "x" | "line") => {
@@ -449,21 +494,80 @@ export default function Home() {
         </article>
 
         <article className="panel selected-shopping" aria-labelledby="shopping">
-          <p className="eyebrow">自動生成</p>
+          <p className="eyebrow">今日の分</p>
           <h2 id="shopping">買い物リスト</h2>
-          {selectedShoppingList.length === 0 ? (
+          <button
+            className="shopping-toggle"
+            type="button"
+            aria-expanded={isShoppingOpen}
+            onClick={() => setIsShoppingOpen((current) => !current)}
+          >
+            {isShoppingOpen ? "買い物リストを閉じる" : "買い物リストを表示"}
+          </button>
+          {isShoppingOpen ? (
+            selectedShoppingList.length === 0 ? (
+              <p className="empty-text">買い足す食材はありません</p>
+            ) : (
+              <ul className="shopping-check-list">
+                {selectedShoppingList.map((item) => {
+                  const itemKey = `${selectedMenu.id}:${ingredientName(item)}`;
+                  const isChecked = Boolean(todayShoppingChecks[itemKey]);
+
+                  return (
+                    <li key={item}>
+                      <label className="shopping-check-item">
+                        <input
+                          type="checkbox"
+                          checked={isChecked}
+                          onChange={() => toggleTodayShoppingItem(item)}
+                        />
+                        <span>{item}</span>
+                      </label>
+                    </li>
+                  );
+                })}
+              </ul>
+            )
+          ) : null}
+        </article>
+      </section>
+
+      <section className="weekly-shopping-card" aria-labelledby="weekly-shopping">
+        <p className="eyebrow">今週の不足分をまとめて確認</p>
+        <h2 id="weekly-shopping">今週のまとめ買いリスト</h2>
+        <button
+          className="shopping-toggle"
+          type="button"
+          aria-expanded={isWeeklyShoppingOpen}
+          onClick={() => setIsWeeklyShoppingOpen((current) => !current)}
+        >
+          {isWeeklyShoppingOpen ? "まとめ買いリストを閉じる" : "まとめ買いリストを表示"}
+        </button>
+        {isWeeklyShoppingOpen ? (
+          weeklyShoppingList.length === 0 ? (
             <p className="empty-text">買い足す食材はありません</p>
           ) : (
-            <ul className="check-list">
-              {selectedShoppingList.map((item) => (
-                <li key={item}>
-                  <span aria-hidden="true" />
-                  {item}
-                </li>
-              ))}
+            <ul className="shopping-check-list">
+              {weeklyShoppingList.map((item) => {
+                const itemKey = `${currentWeek.id}:${ingredientName(item)}`;
+                const isChecked = Boolean(weeklyShoppingChecks[itemKey]);
+
+                return (
+                  <li key={item}>
+                    <label className="shopping-check-item">
+                      <input
+                        type="checkbox"
+                        checked={isChecked}
+                        onChange={() => toggleWeeklyShoppingItem(item)}
+                      />
+                      <span>{item}</span>
+                    </label>
+                  </li>
+                );
+              })}
             </ul>
-          )}
-        </article>
+          )
+        ) : null}
       </section>
 
       <section className="weekly-section" aria-labelledby="weekly">
