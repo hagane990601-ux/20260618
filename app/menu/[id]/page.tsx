@@ -36,7 +36,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const description = recipeDescription(recipe);
 
   return {
-    title: `${recipe.title} | 今日の献立 自動提案`,
+    title: `${recipe.title}の献立 | 今日の献立配信`,
     description,
     openGraph: {
       title: recipe.title,
