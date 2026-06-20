@@ -61,13 +61,6 @@ function missingIngredients(recipe: MenuRecipe, fridgeIngredients: string[]) {
   return recipe.ingredients.filter((ingredient) => !fridgeSet.has(normalize(ingredient)));
 }
 
-function shoppingItemsToBuy(recipe: MenuRecipe, fridgeIngredients: string[]) {
-  const fridgeSet = new Set(fridgeIngredients.map(normalize));
-  return recipe.shoppingList.filter(
-    (_item, index) => !fridgeSet.has(normalize(recipe.ingredients[index] ?? "")),
-  );
-}
-
 function scheduleReminder(reminderTime: string, selectedMenuTitle: string, onComplete: () => void) {
   const [hour, minute] = reminderTime.split(":").map(Number);
   const now = new Date();
@@ -180,7 +173,6 @@ export default function Home() {
     suggestedMenus[0];
   const selectedMatchedIngredients = matchedIngredients(selectedMenu, fridgeIngredients);
   const selectedMissingIngredients = missingIngredients(selectedMenu, fridgeIngredients);
-  const selectedShoppingList = shoppingItemsToBuy(selectedMenu, fridgeIngredients);
   const favoriteIds = new Set(favorites.map((menu) => menu.id));
   const completedCount = suggestedMenus.filter((menu) => weeklyStatus[`${currentWeek.id}:${menu.id}`]).length;
   const weeklyProgress = Math.round((completedCount / suggestedMenus.length) * 100);
@@ -442,14 +434,14 @@ export default function Home() {
         <article className="panel selected-shopping" aria-labelledby="shopping">
           <p className="eyebrow">自動生成</p>
           <h2 id="shopping">買い物リスト</h2>
-          {selectedShoppingList.length === 0 ? (
+          {selectedMissingIngredients.length === 0 ? (
             <p className="empty-text">必要な食材は、すべて冷蔵庫にあります。</p>
           ) : (
             <ul className="check-list">
-              {selectedShoppingList.map((item) => (
-                <li key={item}>
+              {selectedMissingIngredients.map((ingredient) => (
+                <li key={ingredient}>
                   <span aria-hidden="true" />
-                  {item}
+                  {ingredient}
                 </li>
               ))}
             </ul>
