@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ChangeEvent, FormEvent, useEffect, useMemo, useState } from "react";
 import menuRecipes from "./data/menuRecipes.json";
 import { getCurrentWeeklyMenu, getTodayDailyMenu, weeklyMenus, type WeeklyMenu } from "./data/weeklyMenus";
+import { getDeviceId, loadSupabaseSavedData, readLocalSavedData, syncSupabaseSavedData, writeLocalSavedData } from "./lib/supabaseSync";
 
 type MenuRecipe = (typeof menuRecipes)[number];
 type MenuWithMatch = MenuRecipe & { matchCount: number };
@@ -130,6 +131,7 @@ export default function Home() {
   const [isWeeklyShoppingOpen, setIsWeeklyShoppingOpen] = useState(false);
   const [reminder, setReminder] = useState(defaultReminder);
   const [notificationStatus, setNotificationStatus] = useState("未設定");
+  const [storageReady, setStorageReady] = useState(false);
 
   useEffect(() => {
     setCurrentWeek(getCurrentWeeklyMenu());
@@ -158,6 +160,25 @@ export default function Home() {
           };
     setStreak(nextStreak);
     window.localStorage.setItem(STORAGE_KEYS.streak, JSON.stringify(nextStreak));
+
+    const restoreSupabaseData = async () => {
+      const savedData = await loadSupabaseSavedData(getDeviceId());
+      if (savedData) {
+        writeLocalSavedData(savedData);
+        setFridgeIngredients(readStorage<string[]>(STORAGE_KEYS.fridge, []));
+        setFavorites(readStorage<StoredMenu[]>(STORAGE_KEYS.favorites, []));
+        setWeeklyStatus(readStorage<WeeklyStatus>(STORAGE_KEYS.weeklyStatus, {}));
+        setTodayShoppingChecks(readStorage<ShoppingChecks>(STORAGE_KEYS.todayShoppingChecks, {}));
+        setWeeklyShoppingChecks(readStorage<ShoppingChecks>(STORAGE_KEYS.weeklyShoppingChecks, {}));
+        setTodayShoppingHidden(readStorage<ShoppingChecks>(STORAGE_KEYS.todayShoppingHidden, {}));
+        setWeeklyShoppingHidden(readStorage<ShoppingChecks>(STORAGE_KEYS.weeklyShoppingHidden, {}));
+        setReminder(readStorage(STORAGE_KEYS.reminder, defaultReminder));
+        setStreak(readStorage<StreakState>(STORAGE_KEYS.streak, nextStreak));
+      }
+      setStorageReady(true);
+    };
+
+    void restoreSupabaseData();
   }, []);
 
   useEffect(() => {
@@ -191,6 +212,22 @@ export default function Home() {
   useEffect(() => {
     window.localStorage.setItem(STORAGE_KEYS.reminder, JSON.stringify(reminder));
   }, [reminder]);
+
+  useEffect(() => {
+    if (!storageReady) return;
+    void syncSupabaseSavedData(getDeviceId(), readLocalSavedData());
+  }, [
+    favorites,
+    fridgeIngredients,
+    reminder,
+    storageReady,
+    streak,
+    todayShoppingChecks,
+    todayShoppingHidden,
+    weeklyShoppingChecks,
+    weeklyShoppingHidden,
+    weeklyStatus,
+  ]);
 
   const suggestedMenus = useMemo<MenuWithMatch[]>(() => {
     return currentWeek.dailyMenus.flatMap(({ recipeId }) => {
